@@ -106,7 +106,23 @@ checkFullscreen()
     done
 }
 
+# Check if there is any active audio stream trough the soudcard
+# Works with Pulse-Audio
+# That prevent going to sleep while listening to web radios for example. That should work with deezer and others.
+# Note for firefox : if you pause the music, it's still considered active. The tab must be closed or reloaded. (tested with spotify & google music.)
+# Note for Chrome : if you pause the music, the computer will go asleep as normal. (tested with spotify & google  music)
 
+checkAudioStream()
+{
+    #check if pulseAudio runs
+    if pulseaudio --check ; then
+        #check for streams
+        if pacmd list-sink-inputs | grep -c 'state: RUNNING' ; then
+            delayScreensaver
+        fi
+    fi
+
+}  
 
 
 
@@ -232,6 +248,7 @@ while true
 do
     checkDelayProgs
     checkFullscreen
+    checkAudioStream
     sleep $delay
 done
 
